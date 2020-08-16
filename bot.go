@@ -2,22 +2,20 @@ package telegram
 
 import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
-	"log"
 )
 
-func SendTGMsg(msg, token string, groupId int64) {
+func GetBot(msg, token string, groupId int64) (*tgbotapi.BotAPI, error) {
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
-		log.Panic(err)
+		return nil, err
 	}
-
-	log.Printf("Authorized on account %s", bot.Self.UserName)
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
+	return bot, nil
 
-	//updates, err := bot.GetUpdatesChan(u)
+}
 
-	bot.Send(tgbotapi.NewMessage(groupId, msg))
-
+func SendMsg(bot *tgbotapi.BotAPI, msg string, groupId int64) (tgbotapi.Message, error) {
+	return bot.Send(tgbotapi.NewMessage(groupId, msg))
 }
