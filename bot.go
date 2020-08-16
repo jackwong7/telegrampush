@@ -4,7 +4,7 @@ import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-func GetBot(msg, token string, groupId int64) (*tgbotapi.BotAPI, error) {
+func GetBot(token string) (*tgbotapi.BotAPI, error) {
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		return nil, err
