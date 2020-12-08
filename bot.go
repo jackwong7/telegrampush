@@ -10,8 +10,6 @@ func GetBot(token string) (*tgbotapi.BotAPI, error) {
 		return nil, err
 	}
 
-	u := tgbotapi.NewUpdate(0)
-	u.Timeout = 60
 	return bot, nil
 
 }
