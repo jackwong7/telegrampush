@@ -1,19 +1,55 @@
 package telegram
 
 import (
-	"github.com/go-telegram-bot-api/telegram-bot-api"
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
 )
 
-//获取bot实例
-func GetBot(token string) (*tgbotapi.BotAPI, error) {
-	bot, err := tgbotapi.NewBotAPI(token)
-	if err != nil {
-		return nil, err
-	}
-	return bot, nil
+type BotConfig struct {
+	Host   string
+	Token  string
+	UserId int64
 }
 
 //发送消息
-func SendMsg(bot *tgbotapi.BotAPI, msg string, groupId int64) (tgbotapi.Message, error) {
-	return bot.Send(tgbotapi.NewMessage(groupId, msg))
+func SendMsg(bot *BotConfig, msg string) string {
+	if bot.Host == "" {
+		bot.Host = "api.telegram.org"
+	}
+	client := &http.Client{}
+	req, _ := http.NewRequest("POST", fmt.Sprintf("https://%s/bot%s/sendMessage",
+		bot.Host, bot.Token), getReader(bot, msg))
+	tgReq := tgReq{req: req}
+	tgReq.initJsonReq()
+	resp, err := client.Do(tgReq.req)
+	if err != nil {
+		panic(err)
+	}
+	bodyText, err := ioutil.ReadAll(resp.Body)
+	return fmt.Sprintf("result: %s", bodyText)
+
+}
+
+type tgReq struct {
+	req *http.Request
+}
+
+func getReader(bot *BotConfig, msg string) *bytes.Reader {
+	data := make(map[string]interface{})
+	data["chat_id"] = bot.UserId
+	data["text"] = msg
+	bytesData, err := json.Marshal(data)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil
+	}
+	return bytes.NewReader(bytesData)
+}
+
+func (req *tgReq) initJsonReq() {
+	req.req.Header.Set("Content-type", "application/json")
+	req.req.Header.Set("Accept", "application/json")
 }
