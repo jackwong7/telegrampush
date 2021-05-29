@@ -33,10 +33,12 @@ func SendMsg(bot *BotConfig, msg string) string {
 
 }
 
+//tg请求头
 type tgReq struct {
 	req *http.Request
 }
 
+//获取入参
 func getReader(bot *BotConfig, msg string) *bytes.Reader {
 	data := make(map[string]interface{})
 	data["chat_id"] = bot.UserId
@@ -49,6 +51,7 @@ func getReader(bot *BotConfig, msg string) *bytes.Reader {
 	return bytes.NewReader(bytesData)
 }
 
+//初始化tg请求头
 func (req *tgReq) initJsonReq() {
 	req.req.Header.Set("Content-type", "application/json")
 	req.req.Header.Set("Accept", "application/json")
