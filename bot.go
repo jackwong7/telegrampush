@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -14,7 +15,7 @@ type BotConfig struct {
 }
 
 //发送消息
-func SendMsg(bot *BotConfig, msg string) *http.Response {
+func SendMsg(bot *BotConfig, msg string) []byte {
 	if bot.Host == "" {
 		bot.Host = "api.telegram.org"
 	}
@@ -28,7 +29,8 @@ func SendMsg(bot *BotConfig, msg string) *http.Response {
 	if err != nil {
 		panic(err)
 	}
-	return resp
+	bodyText, err := ioutil.ReadAll(resp.Body)
+	return bodyText
 
 }
 
