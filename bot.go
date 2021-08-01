@@ -24,6 +24,7 @@ func SendMsg(bot *BotConfig, msg string) *http.Response {
 	tgReq := tgReq{req: req}
 	tgReq.initJsonReq()
 	resp, err := client.Do(tgReq.req)
+	defer resp.Body.Close()
 	if err != nil {
 		panic(err)
 	}
